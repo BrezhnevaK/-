@@ -1,0 +1,71 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+// Функция для разделения файла на файлы по n строк
+void divideFile(const string& inputFileName, int n)
+{
+    ifstream inputFile(inputFileName); // Открываем входной файл
+
+    if (!inputFile)
+    {
+        cerr << "Неудалось открыть файл!";
+        return;
+    }
+
+    string line;
+    int fileCount = 1;
+    int lineCount = 0;
+
+    ofstream outputFile;
+
+    // Перебираем строки входного файла
+    while (getline(inputFile, line))
+    {
+        if (lineCount == 0)
+        {
+            string outputFileName = "output" + to_string(fileCount) + ".txt";
+            outputFile.open(outputFileName); // Создаем новый выходной файл
+        }
+
+        outputFile << line << endl; // Записываем строку в выходной файл
+
+        lineCount++;
+
+        if (lineCount == n) // Если набрали достаточное количество строк в файл
+        {
+            outputFile.close(); // Закрываем текущий выходной файл
+            lineCount = 0; // Сбрасываем счетчик строк
+
+            fileCount++;
+        }
+    }
+
+    inputFile.close(); // Закрываем входной файл
+
+    // Если остались неполные строки в последнем выходном файле, закрываем его
+    if (outputFile.is_open())
+    {
+        outputFile.close();
+    }
+}
+
+int main()
+{
+    string inputFileName;
+    int n;
+
+    cout << "Введите путь до файла: ";
+    cin >> inputFileName;
+
+    cout << "Введите количество строк в одном файле: ";
+    cin >> n;
+
+    divideFile(inputFileName, n);
+
+    cout << "Разделение файлов прошло успешно." << endl;
+
+    return 0;
+}
