@@ -1,0 +1,252 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+// Функция для ввода данных с проверкой на корректность
+void inputArray(float arr[], int N) {
+    for (int i = 0; i < N; i++) {
+        cout << "Введите элемент " << i + 1 << ": ";
+        cin >> arr[i];
+        while (arr[i] <= 0) {
+            cout << "Введены некорректные данные. Повторите ввод: ";
+            cin >> arr[i];
+        }
+    }
+}
+
+// Функция для вывода массива
+void printArray(float arr[], int N) {
+    for (int i = 0; i < N; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
+// Функция для определения максимального и минимального элементов, а также их индексов
+void findMinMax(float arr[], int N, float& min, int& minIndex, float& max, int& maxIndex) {
+    min = arr[0];
+    max = arr[0];
+    minIndex = 0;
+    maxIndex = 0;
+
+    for (int i = 1; i < N; i++) {
+        if (arr[i] < min) {
+            min = arr[i];
+            minIndex = i;
+        }
+        if (arr[i] > max) {
+            max = arr[i];
+            maxIndex = i;
+        }
+    }
+}
+
+// Функция для вычисления суммы и произведения всех элементов массива
+void calculateSumProduct(float arr[], int N, float& sum, float& product) {
+    sum = 0;
+    product = 1;
+
+    for (int i = 0; i < N; i++) {
+        sum += arr[i];
+        product *= arr[i];
+    }
+}
+
+// Функция для вычисления среднего арифметического и среднего геометрического
+void calculateAverage(float arr[], int N, float& arithmeticMean, float& geometricMean) {
+    arithmeticMean = 0;
+    geometricMean = 1;
+
+    for (int i = 0; i < N; i++) {
+        arithmeticMean += arr[i];
+        geometricMean *= arr[i];
+    }
+
+    arithmeticMean /= N;
+    geometricMean = pow(geometricMean, 1.0 / N);
+}
+
+// Функция для определения количества четных и нечетных элементов
+void countEvenOdd(float arr[], int N, int& evenCount, int& oddCount) {
+    evenCount = 0;
+    oddCount = 0;
+
+    for (int i = 0; i < N; i++) {
+        int rounded = round(arr[i]);
+        if (rounded % 2 == 0) {
+            evenCount++;
+        } else {
+            oddCount++;
+        }
+    }
+}
+
+// Функция для поиска значения, заданного пользователем, в массиве
+void searchValue(float arr[], int N, float value, int& occurrences, int indices[]) {
+    occurrences = 0;
+
+    for (int i = 0; i < N; i++) {
+        if (arr[i] == value) {
+            indices[occurrences] = i;
+            occurrences++;
+        }
+    }
+}
+
+// Функция для сортировки массива в порядке возрастания
+void mergeSortAsc(float arr[], int start, int end) {
+    if (start < end) {
+        int mid = (start + end) / 2;
+        mergeSortAsc(arr, start, mid); // Сортируем левую половину массива
+        mergeSortAsc(arr, mid + 1, end); // Сортируем правую половину массива
+
+        // Слияние двух отсортированных половин
+        int leftSize = mid - start + 1;
+        int rightSize = end - mid;
+        float left[leftSize];
+        float right[rightSize];
+
+        for (int i = 0; i < leftSize; i++) {
+            left[i] = arr[start + i];
+        }
+
+        for (int i = 0; i < rightSize; i++) {
+            right[i] = arr[mid + 1 + i];
+        }
+
+        int i = 0, j = 0, k = start;
+
+        while (i < leftSize && j < rightSize) {
+            if (left[i] <= right[j]) {
+                arr[k] = left[i];
+                i++;
+            } else {
+                arr[k] = right[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < leftSize) {
+            arr[k] = left[i];
+            i++;
+            k++;
+        }
+
+        while (j < rightSize) {
+            arr[k] = right[j];
+            j++;
+            k++;
+        }
+    }
+}
+
+// Функция для сортировки массива в порядке убывания
+void mergeSortDesc(float arr[], int start, int end) {
+    if (start < end) {
+        int mid = (start + end) / 2;
+        mergeSortDesc(arr, start, mid); // Сортируем левую половину массива
+        mergeSortDesc(arr, mid + 1, end); // Сортируем правую половину массива
+
+        // Слияние двух отсортированных половин
+        int leftSize = mid - start + 1;
+        int rightSize = end - mid;
+        float left[leftSize];
+        float right[rightSize];
+
+        for (int i = 0; i < leftSize; i++) {
+            left[i] = arr[start + i];
+        }
+
+        for (int i = 0; i < rightSize; i++) {
+            right[i] = arr[mid + 1 + i];
+        }
+
+        int i = 0, j = 0, k = start;
+
+        while (i < leftSize && j < rightSize) {
+            if (left[i] >= right[j]) {
+                arr[k] = left[i];
+                i++;
+            } else {
+                arr[k] = right[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < leftSize) {
+            arr[k] = left[i];
+            i++;
+            k++;
+        }
+
+        while (j < rightSize) {
+            arr[k] = right[j];
+            j++;
+            k++;
+        }
+    }
+}
+
+int main() {
+    int N;
+    cout << "Введите размер массива: ";
+    cin >> N;
+
+    float arr[N];
+    inputArray(arr, N);
+    cout << "Введенные элементы массива: ";
+    printArray(arr, N);
+
+    float min, max;
+    int minIndex, maxIndex;
+    findMinMax(arr, N, min, minIndex, max, maxIndex);
+    cout << "Минимальный элемент: " << min << " (индекс " << minIndex << ")" << endl;
+    cout << "Максимальный элемент: " << max << " (индекс " << maxIndex << ")" << endl;
+
+    float sum, product;
+    calculateSumProduct(arr, N, sum, product);
+    cout << "Сумма элементов: " << sum << endl;
+    cout << "Произведение элементов: " << product << endl;
+
+    float arithmeticMean, geometricMean;
+    calculateAverage(arr, N, arithmeticMean, geometricMean);
+    cout << "Среднее арифметическое: " << arithmeticMean << endl;
+    cout << "Среднее геометрическое: " << geometricMean << endl;
+
+    int evenCount, oddCount;
+    countEvenOdd(arr, N, evenCount, oddCount);
+    cout << "Количество четных элементов: " << evenCount << endl;
+    cout << "Количество нечетных элементов: " << oddCount << endl;
+
+    float value;
+    cout << "Введите значение для поиска: ";
+    cin >> value;
+    int occurrences;
+    int indices[N];
+    searchValue(arr, N, value, occurrences, indices);
+    cout << "Значение " << value << " найдено " << occurrences << " раз(а) по индексам: ";
+    for (int i = 0; i < occurrences; i++) {
+        cout << indices[i] << " ";
+    }
+    cout << endl;
+
+    float sortedArrAsc[N];
+    float sortedArrDesc[N];
+    for (int i = 0; i < N; i++) {
+        sortedArrAsc[i] = arr[i];
+        sortedArrDesc[i] = arr[i];
+    }
+
+    mergeSortAsc(sortedArrAsc, 0, N - 1);
+    mergeSortDesc(sortedArrDesc, 0, N - 1);
+
+    cout << "Отсортированный массив в порядке возрастания: ";
+    printArray(sortedArrAsc, N);
+
+    cout << "Отсортированный массив в порядке убывания: ";
+    printArray(sortedArrDesc, N);
+
+    return 0;
+}
