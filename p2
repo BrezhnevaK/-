@@ -1,0 +1,211 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+// Функция для ввода матрицы
+vector<vector<int>> inputMatrix(int rows, int cols) {
+    vector<vector<int>> matrix;
+    matrix.resize(rows, vector<int>(cols));
+
+    cout << "Введите элементы матрицы:" << endl;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            while (true) {
+                cout << "Матрица[" << i << "][" << j << "]: ";
+                cin >> matrix[i][j];
+                if (matrix[i][j] >= 0) {
+                    break;
+                } else {
+                    cout << "Введено неверное значение. Попробуйте снова." << endl;
+                }
+            }
+        }
+    }
+
+    return matrix;
+}
+
+// Функция для вывода матрицы
+void printMatrix(const vector<vector<int>>& matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    cout << "Результат:" << endl;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+// Функция для проверки квадратной матрицы
+bool isSquareMatrix(const vector<vector<int>>& matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    return rows == cols;
+}
+
+// Функция для вычисления определителя матрицы
+int calculateDeterminant(const vector<vector<int>>& matrix) {
+    int determinant = 0;
+
+    // Базовый случай - матрица 2x2
+    if (matrix.size() == 2) {
+        determinant = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        return determinant;
+    }
+
+    // Вычисление определителя матрицы через рекурсивное разложение по первой строке
+    for (int j = 0; j < matrix.size(); j++) {
+        vector<vector<int>> subMatrix;
+        subMatrix.resize(matrix.size() - 1, vector<int>(matrix.size() - 1));
+
+        for (int m = 1; m < matrix.size(); m++) {
+            int n = 0;
+            for (int k = 0; k < matrix.size(); k++) {
+                if (k == j) {
+                    continue;
+                }
+                subMatrix[m - 1][n] = matrix[m][k];
+                n++;
+            }
+        }
+
+        determinant += pow(-1, j) * matrix[0][j] * calculateDeterminant(subMatrix);
+    }
+
+    return determinant;
+}
+
+// Функция для выполнения транспонирования матрицы
+vector<vector<int>> transposeMatrix(const vector<vector<int>>& matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    vector<vector<int>> transposedMatrix;
+    transposedMatrix.resize(cols, vector<int>(rows));
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            transposedMatrix[j][i] = matrix[i][j];
+        }
+    }
+
+    return transposedMatrix;
+}
+
+// Функция для выполнения операции сложения матриц
+vector<vector<int>> addMatrix(const vector<vector<int>>& matrix1, const vector<vector<int>>& matrix2) {
+    int rows = matrix1.size();
+    int cols = matrix1[0].size();
+
+    vector<vector<int>> resultMatrix;
+    resultMatrix.resize(rows, vector<int>(cols));
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            resultMatrix[i][j] = matrix1[i][j] + matrix2[i][j];
+        }
+    }
+
+    return resultMatrix;
+}
+
+// Функция для выполнения операции умножения матриц
+vector<vector<int>> multiplyMatrix(const vector<vector<int>>& matrix1, const vector<vector<int>>& matrix2) {
+    int rows1 = matrix1.size();
+    int cols1 = matrix1[0].size();
+    int rows2 = matrix2.size();
+    int cols2 = matrix2[0].size();
+
+    vector<vector<int>> resultMatrix;
+    resultMatrix.resize(rows1, vector<int>(cols2));
+
+    if (cols1 != rows2) {
+        cout << "Умножение невозможно. Количество столбцов первой матрицы не соответствует количеству строк второй матрицы." << endl;
+        return resultMatrix;
+    }
+
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols2; j++) {
+            for (int k = 0; k < cols1; k++) {
+                resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
+            }
+        }
+    }
+
+    return resultMatrix;
+}
+
+int main() {
+    int rows1, cols1, rows2, cols2;
+
+    cout << "Введите размеры первой матрицы:" << endl;
+    cout << "Количество строк: ";
+    cin >> rows1;
+    cout << "Количество столбцов: ";
+    cin >> cols1;
+
+    vector<vector<int>> matrix1 = inputMatrix(rows1, cols1);
+
+    cout << "Введите размеры второй матрицы:" << endl;
+    cout << "Количество строк: ";
+    cin >> rows2;
+    cout << "Количество столбцов: ";
+    cin >> cols2;
+
+    vector<vector<int>> matrix2 = inputMatrix(rows2, cols2);
+
+    // 1. Определение рангов матриц
+    int rank1 = matrix1.size();
+    int rank2 = matrix2.size();
+
+    cout << "Ранг первой матрицы: " << rank1 << endl;
+    cout << "Ранг второй матрицы: " << rank2 << endl;
+
+    // 2. Транспонирование матриц
+    vector<vector<int>> transposedMatrix1 = transposeMatrix(matrix1);
+    vector<vector<int>> transposedMatrix2 = transposeMatrix(matrix2);
+
+    cout << "Транспонированная первая матрица:" << endl;
+    printMatrix(transposedMatrix1);
+
+    cout << "Транспонированная вторая матрица:" << endl;
+    printMatrix(transposedMatrix2);
+
+    // 3. Проверка квадратности матриц и вычисление определителей
+    int determinant1 = 0, determinant2 = 0;
+
+    if (isSquareMatrix(matrix1) && isSquareMatrix(matrix2)) {
+        determinant1 = calculateDeterminant(matrix1);
+        determinant2 = calculateDeterminant(matrix2);
+        cout << "Определитель первой матрицы: " << determinant1 << endl;
+        cout << "Определитель второй матрицы: " << determinant2 << endl;
+    } else {
+        cout << "Одна или обе матрицы не являются квадратными." << endl;
+    }
+
+    // 4. Операции с матрицами
+    vector<vector<int>> sumMatrix, productMatrix;
+    if (matrix1.size() == matrix2.size() && matrix1[0].size() == matrix2[0].size()) {
+        sumMatrix = addMatrix(matrix1, matrix2);
+        cout << "Сумма матриц:" << endl;
+        printMatrix(sumMatrix);
+    } else {
+        cout << "Сложение невозможно. Размеры матриц не совпадают." << endl;
+    }
+
+    if (matrix1[0].size() == matrix2.size()) {
+        productMatrix = multiplyMatrix(matrix1, matrix2);
+        cout << "Произведение матриц:" << endl;
+        printMatrix(productMatrix);
+    } else {
+        cout << "Умножение невозможно. Количество столбцов первой матрицы не соответствует количеству строк второй матрицы." << endl;
+    }
+
+    return 0;
+}
